@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Student List</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Age</th>
+                    <th>Joining Date</th>
+                    <th>Course</th>
+                    <th>Fee</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.student_name }}</td>
+                    <td>{{ student.student_address }}</td>
+                    <td>{{ student.student_age }}</td>
+                    <td>{{ student.joining_date|date:"d-m-Y" }}</td>
+                    <td>{{ student.course.course_name }}</td>
+                    <td>{{ student.course.fee }}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ student.id }}">Edit</button>
+                        <a href="{% url 'delete' student.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                
+                <!-- Modal for Editing -->
+                <div class="modal fade" id="editModal{{ student.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ student.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="post" action="{% url 'editpage' student.id %}">
+                                {% csrf_token %}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel{{ student.id }}">Edit Student Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Current Name -->
+                                    <div class="mb-3">
+                                        <label for="name{{ student.id }}" class="form-label">Student Name</label>
+                                        <input type="text" class="form-control" id="name{{ student.id }}" name="name" value="{{ student.student_name }}" required>
+                                    </div>
+
+                                    <!-- Current Address -->
+                                    <div class="mb-3">
+                                        <label for="address{{ student.id }}" class="form-label">Address</label>
+                                        <input type="text" class="form-control" id="address{{ student.id }}" name="address" value="{{ student.student_address }}" required>
+                                    </div>
+
+                                    <!-- Current Age -->
+                                    <div class="mb-3">
+                                        <label for="age{{ student.id }}" class="form-label">Age</label>
+                                        <input type="number" class="form-control" id="age{{ student.id }}" name="age" value="{{ student.student_age }}" required>
+                                    </div>
+
+                                    <!-- Current Joining Date -->
+                                    <div class="mb-3">
+                                        <label for="jdate{{ student.id }}" class="form-label">Joining Date</label>
+                                        <input type="date" class="form-control" id="jdate{{ student.id }}" name="jdate" value="{{ student.joining_date|date:'Y-m-d' }}" required>
+                                    </div>
+
+                                    <!-- Current Course -->
+                                    <div class="mb-3">
+                                        <label for="sel{{ student.id }}" class="form-label">Course</label>
+                                        <select class="form-control" id="sel{{ student.id }}" name="sel" required>
+                                            {% for course in courses %}
+                                            <option value="{{ course.id }}" {% if course.id == student.course.id %}selected{% endif %}>
+                                                {{ course.course_name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-3">
+            <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
